@@ -15,3 +15,8 @@ sandbox/
 logs/*
 # ...SAUF le fichier de données final qu'on veut récupérer
 !logs/experiment_data.json
+
+
+# Local prompt testing scripts (not part of final system)
+fixer_test.py
+judge_test.py
