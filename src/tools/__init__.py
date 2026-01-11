@@ -19,6 +19,13 @@ from .code_analyzer import (
     analyse_report,
     AnalysisError
 )
+
+from .test_runner import (
+    run_pytest,
+    generate_test_template,
+    check_test_coverage,
+    TestError
+)
 __all__ = [
 # you can use from src.tools import * in your files
     'read_file',
@@ -36,10 +43,14 @@ __all__ = [
     'get_code_metrics',
     'analyse_report',
     
+    'run_pytest',
+    'generate_test_template',
+    'check_test_coverage',
 
     'SecurityError',
     'FileOperationError',
     'AnalysisError',
+    'TestError',
     
    
 ]

@@ -6,8 +6,6 @@ Provides interface to Pylint for static code analysis.
 This module allows agents to analyze Python code quality,
 detect issues, and get actionable feedback for refactoring.
 
-Author: Toolsmith Team Member (Ahlem)
-Project: IGL Lab - The Refactoring Swarm (2025-2026)
 """
 
 import subprocess
@@ -397,7 +395,6 @@ def analyse_report(filepath: str) -> Dict:
                 "file": str,
                 "current_score": float,
                 "priority_issues": List[Dict],  # High-priority fixes
-                "suggestions": List[str],        # Human-readable suggestions
                 "estimated_impact": str          # "high", "medium", "low"
             }
     
