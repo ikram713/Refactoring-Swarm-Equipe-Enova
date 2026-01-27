@@ -12,7 +12,7 @@ def main():
     args = parser.parse_args()
 
     if not os.path.exists(args.target_dir):
-        print(f"❌ Dossier {args.target_dir} introuvable.")
+        print(f" Dossier {args.target_dir} introuvable.")
         sys.exit(1)
 
     print(f"🚀 DEMARRAGE SUR : {args.target_dir}")
