@@ -142,6 +142,7 @@
 from typing import TypedDict, List
 import os
 from dotenv import load_dotenv
+from graphviz import Source
 
 from langgraph.graph import StateGraph, END
 from src.utils.logger import log_experiment, ActionType
@@ -157,7 +158,7 @@ if not GOOGLE_API_KEY and not os.getenv("USE_MOCK_LLM"):
 # ---------------------------
 # MOCK / REAL LLM toggle
 # ---------------------------
-USE_MOCK_LLM = True # Set False to use real Gemini API
+USE_MOCK_LLM = False # Set False to use real Gemini API
 
 # ---------------------------
 # Import Gemini via LangChain or use Mock
@@ -353,3 +354,30 @@ builder.add_conditional_edges(
 builder.add_edge("documenter", END)
 
 workflow = builder.compile()
+
+from graphviz import Digraph
+
+def export_workflow_graph(filename="workflow_graph"):
+    dot = Digraph(comment="Workflow Graph")
+
+    # Nodes you know exist
+    nodes = ["read_files", "auditor", "fixer", "judge", "documenter", "END"]
+    for n in nodes:
+        dot.node(n, n)
+
+    # Add edges exactly as you defined in your workflow
+    dot.edge("read_files", "auditor")
+    dot.edge("auditor", "fixer", label="if problems")
+    dot.edge("auditor", "documenter", label="if no problems")
+    dot.edge("fixer", "judge")
+    dot.edge("judge", "documenter", label="if test passed")
+    dot.edge("judge", "fixer", label="if test failed")
+    dot.edge("documenter", "END")
+
+    # Render PNG and PDF
+    dot.render(filename, format="png", cleanup=True)
+    dot.render(filename, format="pdf", cleanup=True)
+    print(f"✅ Workflow graph exported as {filename}.png & {filename}.pdf")
+
+# Call the function
+export_workflow_graph()
