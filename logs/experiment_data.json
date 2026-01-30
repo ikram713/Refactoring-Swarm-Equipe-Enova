@@ -192,5 +192,411 @@
             "output_response": "FILE: sandbox\\messy_code.py\n```python\nimport math\n\ndef multiply(a,b):\n    z = a*b\n    return z\n\ndef safe_divide(a,b):\n    if b == 0:\n        return \"Cannot divide\"\n    result = a/b\n    return result\n\ndef fibonacci(n):\n    if n <= 0:\n        return []\n    if n == 1:\n        return [0]\n    seq = [0, 1]\n    for i in range(2, n):\n        seq.append(seq[i-1] + seq[i-2])\n    return seq\n\ndef mean(numbers):\n    if not numbers:\n        return None # Return None if list is empty, to prevent ZeroDivisionError\n    total = 0\n    for i in range(len(numbers)):\n        total += numbers[i]\n    return total/len(numbers)\n\nclass Stats:\n    def __init__(self):\n        self.values = []\n    \n    def add_value(self, val):\n        self.values.append(val)\n    \n    def last_value(self):\n        if not self.values: # Check if list is empty to prevent IndexError\n            return None\n        return self.values[-1]\n\nclass AdvancedStats(Stats):\n    def sum_values(self):\n        current_sum = 0 # Renamed 'sum' to 'current_sum' to avoid shadowing built-in sum\n        for i in range(len(self.values)):\n            current_sum += self.values[i]\n        return current_sum\n    \n    def max_value(self):\n        if not self.values: # Check if list is empty to prevent IndexError\n            return None\n        m = self.values[0]\n        for i in range(1, len(self.values)):\n            if self.values[i] > m:\n                m = self.values[i]\n        return m\n\n    def safe_sqrt(self, x):\n        try:\n            result = math.sqrt(x)\n        except:\n            result = None\n        self.values.append(result)\n        return result\n\n    def divide_and_store(self, a, b):\n        result = safe_divide(a, b)\n        if result == \"Cannot divide\": # Check the string returned by safe_divide\n            result = None\n        self.values.append(result)\n        return result\n```"
         },
         "status": "SUCCESS"
+    },
+    {
+        "id": "d298a81e-f864-481a-a4ed-ed89b8d7ebbb",
+        "timestamp": "2026-01-30T18:48:41.508174",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Starting Refactoring Swarm on ./sandbox",
+            "output_response": "System initialized with max 10 iterations",
+            "target_directory": "sandbox"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "c790c7be-2671-4e17-af32-d2b8eb640d8f",
+        "timestamp": "2026-01-30T18:48:41.575111",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "9a6155ce-5657-4b8b-bfb9-551df66036bc",
+        "timestamp": "2026-01-30T18:48:41.646937",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "18e87ed1-6573-4d99-a6f8-83e82ac6abe1",
+        "timestamp": "2026-01-30T18:48:41.724251",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "dd9c3e50-fb8e-4ba2-86df-ab64df8e292d",
+        "timestamp": "2026-01-30T18:48:41.793658",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "71dade98-f8e3-440c-b864-b4972e134e79",
+        "timestamp": "2026-01-30T18:48:41.868835",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "700e1bbf-43c2-43ea-80a1-281018f76b37",
+        "timestamp": "2026-01-30T18:48:41.944705",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "61d4c710-1b83-4818-9d0a-54bb6505aa1f",
+        "timestamp": "2026-01-30T18:48:42.016383",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "4490e473-ba6d-4cd7-bfdf-ee3ef76d66d7",
+        "timestamp": "2026-01-30T18:48:42.076465",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "74018b04-b56c-4e05-95de-3336373731dc",
+        "timestamp": "2026-01-30T18:48:42.186960",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "e0a3d0d7-45e9-4610-a0e3-9f862e73b35b",
+        "timestamp": "2026-01-30T18:48:42.255361",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 0\nPassed: 0\nFailed: 0\nAll passed: False\n\nMISSION_STATUS: FAILURE\n\nDetails:\nError executing tests: Test path not found: sandbox",
+            "total_tests": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "all_passed": false
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "3d015ef0-5f6f-4199-b0fe-e9dba23bfa74",
+        "timestamp": "2026-01-30T18:48:42.326042",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Complete Refactoring Swarm process on ./sandbox",
+            "output_response": "Process completed after 10 iterations. All tests passed: False",
+            "iterations_used": 10,
+            "all_tests_passed": false
+        },
+        "status": "PARTIAL"
+    },
+    {
+        "id": "7b7d75fb-1705-424d-9d9e-20358752d314",
+        "timestamp": "2026-01-30T19:20:05.701292",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "./sandbox",
+            "input_prompt": "Execute all unit tests in directory: ./sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 3\nPassed: 3\nFailed: 0\nAll passed: True\n\nMISSION_STATUS: SUCCESS\n\nDetails:\n All 3 tests passed in 0.04s",
+            "total_tests": 3,
+            "tests_passed": 3,
+            "tests_failed": 0,
+            "all_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "6ff0a17f-3af3-4d42-aea6-088bac8518c6",
+        "timestamp": "2026-01-30T19:21:11.054170",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Starting Refactoring Swarm on ./sandbox",
+            "output_response": "System initialized with max 10 iterations",
+            "target_directory": "sandbox"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "bcdb928d-0e00-40f4-9117-303cf2fe5fb4",
+        "timestamp": "2026-01-30T19:21:11.167393",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "sandbox\\sample_calculator.py",
+            "input_prompt": "Error occurred before prompt generation for sandbox\\sample_calculator.py",
+            "output_response": "ERROR: File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)",
+            "error": "File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)",
+            "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\src\\agents\\auditor.py\", line 114, in analyze_file\n    code_content = read_file(file_path)\n                   ^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\src\\tools\\file_manager.py\", line 106, in read_file\n    raise FileNotFoundError(f\"File not found: {filepath} (resolved to: {safe_path})\")\nFileNotFoundError: File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)\n"
+        },
+        "status": "ERROR"
+    },
+    {
+        "id": "16af79bf-0da6-42d3-b54b-e4597cdd0b2c",
+        "timestamp": "2026-01-30T19:21:14.259876",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 3\nPassed: 3\nFailed: 0\nAll passed: True\n\nMISSION_STATUS: SUCCESS\n\nDetails:\n All 3 tests passed in 0.02s",
+            "total_tests": 3,
+            "tests_passed": 3,
+            "tests_failed": 0,
+            "all_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "b98034db-bdd2-420b-bbed-d30568f4e617",
+        "timestamp": "2026-01-30T19:21:14.359054",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Complete Refactoring Swarm process on ./sandbox",
+            "output_response": "Process completed after 1 iterations. All tests passed: True",
+            "iterations_used": 1,
+            "all_tests_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "2feb7c15-4dc3-42ad-94bd-3204ce8bcf36",
+        "timestamp": "2026-01-30T19:22:25.331947",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Starting Refactoring Swarm on ./sandbox",
+            "output_response": "System initialized with max 10 iterations",
+            "target_directory": "sandbox"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "2cf01749-6214-4d57-a55b-8ee03ef27423",
+        "timestamp": "2026-01-30T19:22:25.401321",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "sandbox\\sample_calculator.py",
+            "input_prompt": "Error occurred before prompt generation for sandbox\\sample_calculator.py",
+            "output_response": "ERROR: File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)",
+            "error": "File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)",
+            "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\src\\agents\\auditor.py\", line 114, in analyze_file\n    code_content = read_file(file_path)\n                   ^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\src\\tools\\file_manager.py\", line 106, in read_file\n    raise FileNotFoundError(f\"File not found: {filepath} (resolved to: {safe_path})\")\nFileNotFoundError: File not found: sandbox\\sample_calculator.py (resolved to: C:\\Users\\User\\Documents\\TP_IGL\\Refactoring-Swarm-Equipe-Enova\\sandbox\\sandbox\\sample_calculator.py)\n"
+        },
+        "status": "ERROR"
+    },
+    {
+        "id": "69d3a0e3-0b91-4e56-ad51-3a3d9131671c",
+        "timestamp": "2026-01-30T19:22:26.577762",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 3\nPassed: 3\nFailed: 0\nAll passed: True\n\nMISSION_STATUS: SUCCESS\n\nDetails:\n All 3 tests passed in 0.02s",
+            "total_tests": 3,
+            "tests_passed": 3,
+            "tests_failed": 0,
+            "all_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "800af9d5-8938-4453-98ef-bb05ea62908a",
+        "timestamp": "2026-01-30T19:22:26.651206",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Complete Refactoring Swarm process on ./sandbox",
+            "output_response": "Process completed after 1 iterations. All tests passed: True",
+            "iterations_used": 1,
+            "all_tests_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "9ff7cef8-3e02-4986-9a2e-1505d8cfbc2d",
+        "timestamp": "2026-01-30T19:25:03.056256",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Starting Refactoring Swarm on ./sandbox",
+            "output_response": "System initialized with max 10 iterations",
+            "target_directory": "sandbox"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "565fcfa5-1cad-4f61-bb7d-aaa6a3c0070a",
+        "timestamp": "2026-01-30T19:25:19.656305",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "sample_calculator.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: sample_calculator.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 3\n\nTop issues:\n1. Line 11: Trailing whitespace\n2. Line 1: Missing module docstring\n3. Line 9: Too few public methods (1/2)\n\n\n\n\nSOURCE CODE:\n```python\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\ndef subtract(a, b):\n    \"\"\"Subtract b from a.\"\"\"\n    return a - b\n\nclass Calculator:\n    \"\"\"Simple calculator class.\"\"\"\n    \n    def multiply(self, a, b):\n        \"\"\"Multiply two numbers.\"\"\"\n        return a * b\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. ",
+            "pylint_score": 0.0,
+            "issues_found": 3,
+            "code_length": 272
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "5748e9b3-cb41-4a56-811d-06bba467d617",
+        "timestamp": "2026-01-30T19:25:20.449980",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\sample_calculator.py",
+            "auditor_report": "LLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. ",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\nLLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n\nFILE TO FIX:\nFILE: sandbox\\sample_calculator.py\n```python\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\ndef subtract(a, b):\n    \"\"\"Subtract b from a.\"\"\"\n    return a - b\n\nclass Calculator:\n    \"\"\"Simple calculator class.\"\"\"\n    \n    def multiply(self, a, b):\n        \"\"\"Multiply two numbers.\"\"\"\n        return a * b\n\n```",
+            "output_response": "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. "
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "dec90c39-b181-4494-9a6f-058a7ee1de87",
+        "timestamp": "2026-01-30T19:25:23.011114",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 3\nPassed: 3\nFailed: 0\nAll passed: True\n\nMISSION_STATUS: SUCCESS\n\nDetails:\n All 3 tests passed in 0.05s",
+            "total_tests": 3,
+            "tests_passed": 3,
+            "tests_failed": 0,
+            "all_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "2f9f8bf6-9a89-4a36-bdb7-545870da6824",
+        "timestamp": "2026-01-30T19:25:23.153527",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Complete Refactoring Swarm process on ./sandbox",
+            "output_response": "Process completed after 1 iterations. All tests passed: True",
+            "iterations_used": 1,
+            "all_tests_passed": true
+        },
+        "status": "SUCCESS"
     }
 ]
