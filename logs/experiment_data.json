@@ -598,5 +598,79 @@
             "all_tests_passed": true
         },
         "status": "SUCCESS"
+    },
+    {
+        "id": "e3e5864e-9532-4ab8-bb55-e8c3c8744511",
+        "timestamp": "2026-01-31T21:38:41.960460",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Starting Refactoring Swarm on ./sandbox",
+            "output_response": "System initialized with max 10 iterations",
+            "target_directory": "sandbox"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "fc44c735-d741-43c1-8904-0f1794f16c9d",
+        "timestamp": "2026-01-31T21:39:07.977995",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "sample_calculator.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: sample_calculator.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 3\n\nTop issues:\n1. Line 11: Trailing whitespace\n2. Line 1: Missing module docstring\n3. Line 9: Too few public methods (1/2)\n\n\n\n\nSOURCE CODE:\n```python\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\ndef subtract(a, b):\n    \"\"\"Subtract b from a.\"\"\"\n    return a - b\n\nclass Calculator:\n    \"\"\"Simple calculator class.\"\"\"\n    \n    def multiply(self, a, b):\n        \"\"\"Multiply two numbers.\"\"\"\n        return a * b\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. ",
+            "pylint_score": 0.0,
+            "issues_found": 3,
+            "code_length": 272
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "ab8ff4fd-bb00-4bb7-9b4a-bd6cf24a4fdd",
+        "timestamp": "2026-01-31T21:39:10.841562",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\sample_calculator.py",
+            "auditor_report": "LLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. ",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\nLLM_ERROR: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n\nFILE TO FIX:\nFILE: sandbox\\sample_calculator.py\n```python\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\ndef subtract(a, b):\n    \"\"\"Subtract b from a.\"\"\"\n    return a - b\n\nclass Calculator:\n    \"\"\"Simple calculator class.\"\"\"\n    \n    def multiply(self, a, b):\n        \"\"\"Multiply two numbers.\"\"\"\n        return a * b\n\n```",
+            "output_response": "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. "
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "59321a2b-a04d-47cf-bdee-bad44bd88de7",
+        "timestamp": "2026-01-31T21:39:13.734405",
+        "agent": "Judge_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "DEBUG",
+        "details": {
+            "sandbox_directory": "sandbox",
+            "input_prompt": "Execute all unit tests in directory: sandbox\n        \nJudge must verify if all tests pass.\nIf yes → Mission complete\nIf no → Loop must restart",
+            "output_response": "TEST EXECUTION RESULTS:\nTotal tests: 3\nPassed: 3\nFailed: 0\nAll passed: True\n\nMISSION_STATUS: SUCCESS\n\nDetails:\n All 3 tests passed in 0.04s",
+            "total_tests": 3,
+            "tests_passed": 3,
+            "tests_failed": 0,
+            "all_passed": true
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "437eb46a-f83b-4a67-a46c-3981948978a1",
+        "timestamp": "2026-01-31T21:39:13.854948",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "input_prompt": "Complete Refactoring Swarm process on ./sandbox",
+            "output_response": "Process completed after 1 iterations. All tests passed: True",
+            "iterations_used": 1,
+            "all_tests_passed": true
+        },
+        "status": "SUCCESS"
     }
 ]
