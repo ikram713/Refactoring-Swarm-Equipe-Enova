@@ -1104,5 +1104,631 @@
             "output_response": "429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 1.298438615s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://ai.google.dev/gemini-api/docs/rate-limits\"\n}\n, violations {\n  quota_metric: \"generativelanguage.googleapis.com/generate_content_free_tier_requests\"\n  quota_id: \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-2.5-flash\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 20\n}\n, retry_delay {\n  seconds: 1\n}\n]"
         },
         "status": "FAILURE"
+    },
+    {
+        "id": "e32f0859-c0b9-4622-9b81-924944089d59",
+        "timestamp": "2026-02-24T13:21:46.934652",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "target_dir": "./sandbox",
+            "input_prompt": "System startup with target directory: ./sandbox",
+            "output_response": "System initialized successfully"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "6fc3d72b-f647-4082-92cf-007afe44f792",
+        "timestamp": "2026-02-24T13:21:57.725415",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_class_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_class_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\nclass Calculator:\n    def __init__(self)  # Manque :\n    self.history = []  # Mauvaise indentation\n    \n    def add(self, a, b)  # Manque :\n    result = a + b  # Mauvaise indentation\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def get_last_result(self):\n        return self.history[-1]  # IndexError si vide\n    \n    def clear(self):\n        history = []  # Devrait être self.history\n\nclass BankAccount:\n    def __init__(self, balance)  # Manque :\n    self.balance = balance\n    \n    def withdraw(self, amount):\n        self.balance -= amount  # Pas de vérification montant > balance\n        return self.balance\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 652
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "fcee2387-6c7f-42b1-874d-3e894c3bd948",
+        "timestamp": "2026-02-24T13:21:57.863022",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_class_errors.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_class_errors.py\n```python\n\nclass Calculator:\n    def __init__(self)  # Manque :\n    self.history = []  # Mauvaise indentation\n    \n    def add(self, a, b)  # Manque :\n    result = a + b  # Mauvaise indentation\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def get_last_result(self):\n        return self.history[-1]  # IndexError si vide\n    \n    def clear(self):\n        history = []  # Devrait être self.history\n\nclass BankAccount:\n    def __init__(self, balance)  # Manque :\n    self.balance = balance\n    \n    def withdraw(self, amount):\n        self.balance -= amount  # Pas de vérification montant > balance\n        return self.balance\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "412a4c5e-c690-47b2-96cf-10ab74b32fff",
+        "timestamp": "2026-02-24T13:21:59.796166",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_complex_multi_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_complex_multi_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 4: Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nPriority Issues:\n- [critical] Line 4: Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nSOURCE CODE:\n```python\n\nimport math\n\ndef factorial(n)  # Manque :\n    if n = 0:  # Mauvais opérateur\n        return 1\n    return n * factorial(n - 1)\n\nclass MathOperations:\n    def __init__(self)  # Manque :\n    self.history = []\n    \n    def sqrt(self, x)  # Manque :\n    if x < 0:\n    return None  # Mauvaise indentation\n    result = math.sqrt(x)\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def power(self, base, exp):\n        if exp = 0:  # Mauvais opérateur\n            return 1\n        result = 1\n        for i in range(exp):\n            result = result * base\n        return result\n    \n    def divide_safe(self, a, b):\n        return a / b  # Pas de vérification b == 0\n\ndef BadFunctionName(x,y):  # Mauvais style\n    z=x+y\n    return z\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 760
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "a6daac4b-a1e7-476b-abe5-93f8644011bb",
+        "timestamp": "2026-02-24T13:21:59.931026",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_complex_multi_errors.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 4)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_complex_multi_errors.py\n```python\n\nimport math\n\ndef factorial(n)  # Manque :\n    if n = 0:  # Mauvais opérateur\n        return 1\n    return n * factorial(n - 1)\n\nclass MathOperations:\n    def __init__(self)  # Manque :\n    self.history = []\n    \n    def sqrt(self, x)  # Manque :\n    if x < 0:\n    return None  # Mauvaise indentation\n    result = math.sqrt(x)\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def power(self, base, exp):\n        if exp = 0:  # Mauvais opérateur\n            return 1\n        result = 1\n        for i in range(exp):\n            result = result * base\n        return result\n    \n    def divide_safe(self, a, b):\n        return a / b  # Pas de vérification b == 0\n\ndef BadFunctionName(x,y):  # Mauvais style\n    z=x+y\n    return z\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "6d3f2c7c-da60-4ea5-9e5c-411e1327b5aa",
+        "timestamp": "2026-02-24T13:22:01.949484",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_indentation_complex.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_indentation_complex.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 5: Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nPriority Issues:\n- [critical] Line 5: Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nSOURCE CODE:\n```python\n\ndef nested_function():\n    if True:\n        if True:\n        print(\"Wrong indent\")  # Mauvaise indentation\n        return True\n    return False\n\nclass MyClass:\n    def method1(self):\n        try:\n        result = 10 / 0  # Mauvaise indentation\n        except:\n        result = None  # Mauvaise indentation\n        return result\n    \n    def method2(self):\n    if True:  # Mauvaise indentation\n    return \"OK\"  # Mauvaise indentation\n    return \"Error\"\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 453
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "05220dd7-48c1-4736-886e-4673e1da8480",
+        "timestamp": "2026-02-24T13:22:02.080324",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_indentation_complex.py",
+            "auditor_report": "1. Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_indentation_complex.py\n```python\n\ndef nested_function():\n    if True:\n        if True:\n        print(\"Wrong indent\")  # Mauvaise indentation\n        return True\n    return False\n\nclass MyClass:\n    def method1(self):\n        try:\n        result = 10 / 0  # Mauvaise indentation\n        except:\n        result = None  # Mauvaise indentation\n        return result\n    \n    def method2(self):\n    if True:  # Mauvaise indentation\n    return \"OK\"  # Mauvaise indentation\n    return \"Error\"\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "a2e33079-2a80-430c-bb3c-341c08afc1f9",
+        "timestamp": "2026-02-24T13:22:04.016619",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_logic_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_logic_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 6\n\nTop issues:\n1. Line 1: Missing module docstring\n2. Line 2: Missing function or method docstring\n3. Line 5: Missing function or method docstring\n4. Line 8: Missing function or method docstring\n5. Line 14: Missing function or method docstring\n\n\n\n\nSOURCE CODE:\n```python\n\ndef divide(a, b):\n    return a / b  # Pas de vérification b == 0\n\ndef get_first_element(lst):\n    return lst[0]  # IndexError si liste vide\n\ndef calculate_average(numbers):\n    total = 0\n    for n in numbers:\n        total += n\n    return total / len(numbers)  # ZeroDivisionError si vide\n\ndef safe_sqrt(x):\n    import math\n    return math.sqrt(x)  # ValueError si x < 0\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 6,
+            "code_length": 372
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "e5f4260f-1295-4566-ad71-fa5f2a452fa2",
+        "timestamp": "2026-02-24T13:22:04.151378",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_logic_errors.py",
+            "auditor_report": "1. Missing module docstring\n2. Missing function or method docstring\n3. Missing function or method docstring\n4. Missing function or method docstring\n5. Missing function or method docstring\n6. Import outside toplevel (math)\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Missing module docstring\n2. Missing function or method docstring\n3. Missing function or method docstring\n4. Missing function or method docstring\n5. Missing function or method docstring\n6. Import outside toplevel (math)\n\n\nFILE TO FIX:\nFILE: sandbox\\test_logic_errors.py\n```python\n\ndef divide(a, b):\n    return a / b  # Pas de vérification b == 0\n\ndef get_first_element(lst):\n    return lst[0]  # IndexError si liste vide\n\ndef calculate_average(numbers):\n    total = 0\n    for n in numbers:\n        total += n\n    return total / len(numbers)  # ZeroDivisionError si vide\n\ndef safe_sqrt(x):\n    import math\n    return math.sqrt(x)  # ValueError si x < 0\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "1cab4e4b-154c-4e98-8fd8-25922d35cd80",
+        "timestamp": "2026-02-24T13:22:06.131701",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_missing_docs.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_missing_docs.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 8\n\nTop issues:\n1. Line 17: Trailing whitespace\n2. Line 21: Trailing whitespace\n3. Line 1: Missing module docstring\n4. Line 2: Missing function or method docstring\n5. Line 7: Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n\n\n\n\nSOURCE CODE:\n```python\n\ndef complex_function(data, threshold, mode):\n    filtered = []\n    for item in data:\n        if item > threshold:\n            filtered.append(item)\n    if mode == \"sum\":\n        return sum(filtered)\n    elif mode == \"avg\":\n        return sum(filtered) / len(filtered)\n    return filtered\n\nclass DataProcessor:\n    def __init__(self, data):\n        self.data = data\n        self.processed = False\n    \n    def process(self):\n        self.data = [x * 2 for x in self.data]\n        self.processed = True\n    \n    def get_stats(self):\n        return {\n            \"min\": min(self.data),\n            \"max\": max(self.data),\n            \"avg\": sum(self.data) / len(self.data)\n        }\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 8,
+            "code_length": 680
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "4cca4ee0-aab9-4677-9fec-63ed6261ffc4",
+        "timestamp": "2026-02-24T13:22:06.266790",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_missing_docs.py",
+            "auditor_report": "1. Trailing whitespace\n2. Trailing whitespace\n3. Missing module docstring\n4. Missing function or method docstring\n5. Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n6. Missing class docstring\n7. Missing function or method docstring\n8. Missing function or method docstring\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Trailing whitespace\n2. Trailing whitespace\n3. Missing module docstring\n4. Missing function or method docstring\n5. Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n6. Missing class docstring\n7. Missing function or method docstring\n8. Missing function or method docstring\n\n\nFILE TO FIX:\nFILE: sandbox\\test_missing_docs.py\n```python\n\ndef complex_function(data, threshold, mode):\n    filtered = []\n    for item in data:\n        if item > threshold:\n            filtered.append(item)\n    if mode == \"sum\":\n        return sum(filtered)\n    elif mode == \"avg\":\n        return sum(filtered) / len(filtered)\n    return filtered\n\nclass DataProcessor:\n    def __init__(self, data):\n        self.data = data\n        self.processed = False\n    \n    def process(self):\n        self.data = [x * 2 for x in self.data]\n        self.processed = True\n    \n    def get_stats(self):\n        return {\n            \"min\": min(self.data),\n            \"max\": max(self.data),\n            \"avg\": sum(self.data) / len(self.data)\n        }\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "b6b479a6-a0a0-46a0-8965-99d45f08559a",
+        "timestamp": "2026-02-24T13:22:08.233441",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_realistic_app.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_realistic_app.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\nclass UserManager:\n    def __init__(self)  # Manque :\n    self.users = {}\n    \n    def add_user(self, username, email)  # Manque :\n    if username in self.users:\n    return False  # Mauvaise indentation\n    users[username] = email  # Devrait être self.users\n    return True\n    \n    def remove_user(self, username):\n        del self.users[username]  # KeyError si n'existe pas\n    \n    def get_user_email(self, username):\n        return self.users[username]  # KeyError si n'existe pas\n    \n    def count_users(self):\n        return len(self.users)\n\ndef validate_email(email):\n    if '@' in email and '.' in email:\n        return True\n    return False\n\ndef process_user_data(data):\n    results = []\n    for user in data:\n        if validate_email(user['email']):  # KeyError si 'email' absent\n            results.append(user)\n    return results\n\ndef calculate_statistics(numbers):\n    total = sum(numbers)\n    avg = total / len(numbers)  # ZeroDivisionError si vide\n    return {\n        \"total\": total,\n        \"average\": avg,\n        \"min\": min(numbers),  # ValueError si vide\n        \"max\": max(numbers)   # ValueError si vide\n    }\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 1136
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "0d4d2058-a147-4c60-a657-fab107050836",
+        "timestamp": "2026-02-24T13:22:08.365655",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_realistic_app.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_realistic_app.py\n```python\n\nclass UserManager:\n    def __init__(self)  # Manque :\n    self.users = {}\n    \n    def add_user(self, username, email)  # Manque :\n    if username in self.users:\n    return False  # Mauvaise indentation\n    users[username] = email  # Devrait être self.users\n    return True\n    \n    def remove_user(self, username):\n        del self.users[username]  # KeyError si n'existe pas\n    \n    def get_user_email(self, username):\n        return self.users[username]  # KeyError si n'existe pas\n    \n    def count_users(self):\n        return len(self.users)\n\ndef validate_email(email):\n    if '@' in email and '.' in email:\n        return True\n    return False\n\ndef process_user_data(data):\n    results = []\n    for user in data:\n        if validate_email(user['email']):  # KeyError si 'email' absent\n            results.append(user)\n    return results\n\ndef calculate_statistics(numbers):\n    total = sum(numbers)\n    avg = total / len(numbers)  # ZeroDivisionError si vide\n    return {\n        \"total\": total,\n        \"average\": avg,\n        \"min\": min(numbers),  # ValueError si vide\n        \"max\": max(numbers)   # ValueError si vide\n    }\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "d9ea2e01-383c-47b4-bac5-45befe5916ef",
+        "timestamp": "2026-02-24T13:22:10.412822",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_style_pep8.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_style_pep8.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 11\n\nTop issues:\n1. Line 14: Line too long (102/100)\n2. Line 1: Missing module docstring\n3. Line 2: Missing function or method docstring\n4. Line 6: Missing class docstring\n5. Line 7: Missing function or method docstring\n\n\n\n\nSOURCE CODE:\n```python\n\ndef BadFunctionName(x,y):  # Mauvais nom + pas d'espaces\n    z=x+y  # Pas d'espaces autour de =\n    return z\n\nclass myclass:  # Nom de classe en minuscules\n    def MyMethod(self,a,b):  # Pas d'espaces dans les paramètres\n        list=[1,2,3]  # Shadow built-in + pas d'espaces\n        sum=0  # Shadow built-in\n        for i in list:\n            sum+=i  # Pas d'espaces\n        return sum\n\ndef VeryLongFunctionNameThatDoesNotFollowPep8StyleGuideAndIsTooLongToReadEasily(param1,param2,param3):\n    return param1+param2+param3\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 11,
+            "code_length": 525
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "52b31a80-d0b5-46e4-b0f6-8c4e6d92d8ff",
+        "timestamp": "2026-02-24T13:22:10.610370",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_style_pep8.py",
+            "auditor_report": "1. Line too long (102/100)\n2. Missing module docstring\n3. Missing function or method docstring\n4. Missing class docstring\n5. Missing function or method docstring\n6. Redefining built-in 'list'\n7. Redefining built-in 'sum'\n8. Unused argument 'a'\n9. Unused argument 'b'\n10. Too few public methods (1/2)\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Line too long (102/100)\n2. Missing module docstring\n3. Missing function or method docstring\n4. Missing class docstring\n5. Missing function or method docstring\n6. Redefining built-in 'list'\n7. Redefining built-in 'sum'\n8. Unused argument 'a'\n9. Unused argument 'b'\n10. Too few public methods (1/2)\n\n\nFILE TO FIX:\nFILE: sandbox\\test_style_pep8.py\n```python\n\ndef BadFunctionName(x,y):  # Mauvais nom + pas d'espaces\n    z=x+y  # Pas d'espaces autour de =\n    return z\n\nclass myclass:  # Nom de classe en minuscules\n    def MyMethod(self,a,b):  # Pas d'espaces dans les paramètres\n        list=[1,2,3]  # Shadow built-in + pas d'espaces\n        sum=0  # Shadow built-in\n        for i in list:\n            sum+=i  # Pas d'espaces\n        return sum\n\ndef VeryLongFunctionNameThatDoesNotFollowPep8StyleGuideAndIsTooLongToReadEasily(param1,param2,param3):\n    return param1+param2+param3\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "2ec07eb4-bacc-48a8-aeed-01d17213355d",
+        "timestamp": "2026-02-24T13:22:12.545650",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_syntax_basic.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_syntax_basic.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 2: Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nPriority Issues:\n- [critical] Line 2: Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nSOURCE CODE:\n```python\n\ndef add(a, b)  # Manque :\n    return a + b\n\ndef multiply(x, y)\n    return x * y  # Manque :\n\ndef subtract(a, b):\nreturn a - b  # Mauvaise indentation\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 151
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "636a22ed-b162-450e-bfb8-6bf03e8180e1",
+        "timestamp": "2026-02-24T13:22:12.674723",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_syntax_basic.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 2)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_syntax_basic.py\n```python\n\ndef add(a, b)  # Manque :\n    return a + b\n\ndef multiply(x, y)\n    return x * y  # Manque :\n\ndef subtract(a, b):\nreturn a - b  # Mauvaise indentation\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "6fa8170f-4a18-43a2-bbf0-971eb1ca6dd1",
+        "timestamp": "2026-02-24T13:22:14.737610",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_undefined_vars.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_undefined_vars.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 14\n\nTop issues:\n1. Line 13: Trailing whitespace\n2. Line 16: Trailing whitespace\n3. Line 1: Missing module docstring\n4. Line 2: Missing function or method docstring\n5. Line 5: Undefined variable 'z'\n\n\nPriority Issues:\n- [high] Line 5: Undefined variable 'z'\n- [high] Line 8: Undefined variable 'math'\n- [high] Line 15: Undefined variable 'grade'\n- [high] Line 18: Undefined variable 'name'\n\n\nSOURCE CODE:\n```python\n\ndef use_undefined_var():\n    x = 10\n    y = 20\n    return z  # z n'est pas défini\n\ndef missing_import():\n    return math.sqrt(16)  # math n'est pas importé\n\nclass Student:\n    def __init__(self, name):\n        self.name = name\n    \n    def get_grade(self):\n        return grade  # grade n'est pas défini\n    \n    def print_info(self):\n        print(f\"Name: {name}\")  # Devrait être self.name\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 14,
+            "code_length": 393
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "d8a2ba8f-9f7c-4f47-b61d-d98affc7adc7",
+        "timestamp": "2026-02-24T13:22:14.868063",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_undefined_vars.py",
+            "auditor_report": "1. Undefined variable 'z'\n2. Undefined variable 'math'\n3. Undefined variable 'grade'\n4. Undefined variable 'name'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Undefined variable 'z'\n2. Undefined variable 'math'\n3. Undefined variable 'grade'\n4. Undefined variable 'name'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_undefined_vars.py\n```python\n\ndef use_undefined_var():\n    x = 10\n    y = 20\n    return z  # z n'est pas défini\n\ndef missing_import():\n    return math.sqrt(16)  # math n'est pas importé\n\nclass Student:\n    def __init__(self, name):\n        self.name = name\n    \n    def get_grade(self):\n        return grade  # grade n'est pas défini\n    \n    def print_info(self):\n        print(f\"Name: {name}\")  # Devrait être self.name\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "c3dd5c6a-17c0-45b0-a1f5-2061ebaf8d75",
+        "timestamp": "2026-02-24T13:22:17.293359",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_wrong_operators.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_wrong_operators.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\ndef check_equality(a, b):\n    if a = b:  # Devrait être ==\n        return True\n    return False\n\ndef check_range(x):\n    if x > 0 and x < 100:  # OK mais pourrait être 0 < x < 100\n        return \"valid\"\n    return \"invalid\"\n\ndef assign_in_condition():\n    x = 10\n    if y = 5:  # Devrait être ==\n        x = y\n    return x\n\ndef factorial(n):\n    if n = 0:  # Devrait être ==\n        return 1\n    return n * factorial(n - 1)\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 425
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "1fbaab05-3465-4564-9673-9d4142cdab9a",
+        "timestamp": "2026-02-24T13:22:17.414011",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_wrong_operators.py",
+            "auditor_report": "1. Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_wrong_operators.py\n```python\n\ndef check_equality(a, b):\n    if a = b:  # Devrait être ==\n        return True\n    return False\n\ndef check_range(x):\n    if x > 0 and x < 100:  # OK mais pourrait être 0 < x < 100\n        return \"valid\"\n    return \"invalid\"\n\ndef assign_in_condition():\n    x = 10\n    if y = 5:  # Devrait être ==\n        x = y\n    return x\n\ndef factorial(n):\n    if n = 0:  # Devrait être ==\n        return 1\n    return n * factorial(n - 1)\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "ef9dcdad-a28b-4c7b-8183-1477df51c830",
+        "timestamp": "2026-02-24T13:38:55.007098",
+        "agent": "System",
+        "model": "N/A",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "target_dir": "./sandbox",
+            "input_prompt": "System startup with target directory: ./sandbox",
+            "output_response": "System initialized successfully"
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "7b3bb972-fba0-4b1b-ae94-9f1648dcddc7",
+        "timestamp": "2026-02-24T13:38:58.532712",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_class_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_class_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\nclass Calculator:\n    def __init__(self)  # Manque :\n    self.history = []  # Mauvaise indentation\n    \n    def add(self, a, b)  # Manque :\n    result = a + b  # Mauvaise indentation\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def get_last_result(self):\n        return self.history[-1]  # IndexError si vide\n    \n    def clear(self):\n        history = []  # Devrait être self.history\n\nclass BankAccount:\n    def __init__(self, balance)  # Manque :\n    self.balance = balance\n    \n    def withdraw(self, amount):\n        self.balance -= amount  # Pas de vérification montant > balance\n        return self.balance\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 652
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "afcb1e56-2f3d-49d7-8d5b-10ac4480ddb5",
+        "timestamp": "2026-02-24T13:38:58.664326",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_class_errors.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_class_errors.py\n```python\n\nclass Calculator:\n    def __init__(self)  # Manque :\n    self.history = []  # Mauvaise indentation\n    \n    def add(self, a, b)  # Manque :\n    result = a + b  # Mauvaise indentation\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def get_last_result(self):\n        return self.history[-1]  # IndexError si vide\n    \n    def clear(self):\n        history = []  # Devrait être self.history\n\nclass BankAccount:\n    def __init__(self, balance)  # Manque :\n    self.balance = balance\n    \n    def withdraw(self, amount):\n        self.balance -= amount  # Pas de vérification montant > balance\n        return self.balance\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "b7b7c4d1-648f-4f4b-9b7d-bae5ee639eb5",
+        "timestamp": "2026-02-24T13:39:00.554149",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_complex_multi_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_complex_multi_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 4: Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nPriority Issues:\n- [critical] Line 4: Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nSOURCE CODE:\n```python\n\nimport math\n\ndef factorial(n)  # Manque :\n    if n = 0:  # Mauvais opérateur\n        return 1\n    return n * factorial(n - 1)\n\nclass MathOperations:\n    def __init__(self)  # Manque :\n    self.history = []\n    \n    def sqrt(self, x)  # Manque :\n    if x < 0:\n    return None  # Mauvaise indentation\n    result = math.sqrt(x)\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def power(self, base, exp):\n        if exp = 0:  # Mauvais opérateur\n            return 1\n        result = 1\n        for i in range(exp):\n            result = result * base\n        return result\n    \n    def divide_safe(self, a, b):\n        return a / b  # Pas de vérification b == 0\n\ndef BadFunctionName(x,y):  # Mauvais style\n    z=x+y\n    return z\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 760
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "1a08ba81-530b-40db-bed4-d13115f62b55",
+        "timestamp": "2026-02-24T13:39:00.679330",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_complex_multi_errors.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 4)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 4)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_complex_multi_errors.py\n```python\n\nimport math\n\ndef factorial(n)  # Manque :\n    if n = 0:  # Mauvais opérateur\n        return 1\n    return n * factorial(n - 1)\n\nclass MathOperations:\n    def __init__(self)  # Manque :\n    self.history = []\n    \n    def sqrt(self, x)  # Manque :\n    if x < 0:\n    return None  # Mauvaise indentation\n    result = math.sqrt(x)\n    history.append(result)  # Devrait être self.history\n    return result\n    \n    def power(self, base, exp):\n        if exp = 0:  # Mauvais opérateur\n            return 1\n        result = 1\n        for i in range(exp):\n            result = result * base\n        return result\n    \n    def divide_safe(self, a, b):\n        return a / b  # Pas de vérification b == 0\n\ndef BadFunctionName(x,y):  # Mauvais style\n    z=x+y\n    return z\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "a49898b2-8530-4503-817c-06da3652394e",
+        "timestamp": "2026-02-24T13:39:02.584092",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_indentation_complex.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_indentation_complex.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 5: Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nPriority Issues:\n- [critical] Line 5: Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nSOURCE CODE:\n```python\n\ndef nested_function():\n    if True:\n        if True:\n        print(\"Wrong indent\")  # Mauvaise indentation\n        return True\n    return False\n\nclass MyClass:\n    def method1(self):\n        try:\n        result = 10 / 0  # Mauvaise indentation\n        except:\n        result = None  # Mauvaise indentation\n        return result\n    \n    def method2(self):\n    if True:  # Mauvaise indentation\n    return \"OK\"  # Mauvaise indentation\n    return \"Error\"\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 453
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "2f1cbe91-1083-4c18-8bf0-22ac14be5445",
+        "timestamp": "2026-02-24T13:39:02.749496",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_indentation_complex.py",
+            "auditor_report": "1. Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected an indented block after 'if' statement on line 4 (<unknown>, line 5)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_indentation_complex.py\n```python\n\ndef nested_function():\n    if True:\n        if True:\n        print(\"Wrong indent\")  # Mauvaise indentation\n        return True\n    return False\n\nclass MyClass:\n    def method1(self):\n        try:\n        result = 10 / 0  # Mauvaise indentation\n        except:\n        result = None  # Mauvaise indentation\n        return result\n    \n    def method2(self):\n    if True:  # Mauvaise indentation\n    return \"OK\"  # Mauvaise indentation\n    return \"Error\"\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "c8477f1e-9e2f-4a72-91a9-139d904bbc79",
+        "timestamp": "2026-02-24T13:39:04.644549",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_logic_errors.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_logic_errors.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 6\n\nTop issues:\n1. Line 1: Missing module docstring\n2. Line 2: Missing function or method docstring\n3. Line 5: Missing function or method docstring\n4. Line 8: Missing function or method docstring\n5. Line 14: Missing function or method docstring\n\n\n\n\nSOURCE CODE:\n```python\n\ndef divide(a, b):\n    return a / b  # Pas de vérification b == 0\n\ndef get_first_element(lst):\n    return lst[0]  # IndexError si liste vide\n\ndef calculate_average(numbers):\n    total = 0\n    for n in numbers:\n        total += n\n    return total / len(numbers)  # ZeroDivisionError si vide\n\ndef safe_sqrt(x):\n    import math\n    return math.sqrt(x)  # ValueError si x < 0\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 6,
+            "code_length": 372
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "57f44ede-c768-47bf-9ce7-fb97c278ad8b",
+        "timestamp": "2026-02-24T13:39:04.767156",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_logic_errors.py",
+            "auditor_report": "1. Missing module docstring\n2. Missing function or method docstring\n3. Missing function or method docstring\n4. Missing function or method docstring\n5. Missing function or method docstring\n6. Import outside toplevel (math)\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Missing module docstring\n2. Missing function or method docstring\n3. Missing function or method docstring\n4. Missing function or method docstring\n5. Missing function or method docstring\n6. Import outside toplevel (math)\n\n\nFILE TO FIX:\nFILE: sandbox\\test_logic_errors.py\n```python\n\ndef divide(a, b):\n    return a / b  # Pas de vérification b == 0\n\ndef get_first_element(lst):\n    return lst[0]  # IndexError si liste vide\n\ndef calculate_average(numbers):\n    total = 0\n    for n in numbers:\n        total += n\n    return total / len(numbers)  # ZeroDivisionError si vide\n\ndef safe_sqrt(x):\n    import math\n    return math.sqrt(x)  # ValueError si x < 0\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "690954e6-529a-4d3b-a2e9-671ae8ebbbed",
+        "timestamp": "2026-02-24T13:39:06.658518",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_missing_docs.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_missing_docs.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 8\n\nTop issues:\n1. Line 17: Trailing whitespace\n2. Line 21: Trailing whitespace\n3. Line 1: Missing module docstring\n4. Line 2: Missing function or method docstring\n5. Line 7: Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n\n\n\n\nSOURCE CODE:\n```python\n\ndef complex_function(data, threshold, mode):\n    filtered = []\n    for item in data:\n        if item > threshold:\n            filtered.append(item)\n    if mode == \"sum\":\n        return sum(filtered)\n    elif mode == \"avg\":\n        return sum(filtered) / len(filtered)\n    return filtered\n\nclass DataProcessor:\n    def __init__(self, data):\n        self.data = data\n        self.processed = False\n    \n    def process(self):\n        self.data = [x * 2 for x in self.data]\n        self.processed = True\n    \n    def get_stats(self):\n        return {\n            \"min\": min(self.data),\n            \"max\": max(self.data),\n            \"avg\": sum(self.data) / len(self.data)\n        }\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 8,
+            "code_length": 680
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "9cb87261-bf3f-4e1d-aafd-fc640c8826d1",
+        "timestamp": "2026-02-24T13:39:06.783832",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_missing_docs.py",
+            "auditor_report": "1. Trailing whitespace\n2. Trailing whitespace\n3. Missing module docstring\n4. Missing function or method docstring\n5. Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n6. Missing class docstring\n7. Missing function or method docstring\n8. Missing function or method docstring\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Trailing whitespace\n2. Trailing whitespace\n3. Missing module docstring\n4. Missing function or method docstring\n5. Unnecessary \"elif\" after \"return\", remove the leading \"el\" from \"elif\"\n6. Missing class docstring\n7. Missing function or method docstring\n8. Missing function or method docstring\n\n\nFILE TO FIX:\nFILE: sandbox\\test_missing_docs.py\n```python\n\ndef complex_function(data, threshold, mode):\n    filtered = []\n    for item in data:\n        if item > threshold:\n            filtered.append(item)\n    if mode == \"sum\":\n        return sum(filtered)\n    elif mode == \"avg\":\n        return sum(filtered) / len(filtered)\n    return filtered\n\nclass DataProcessor:\n    def __init__(self, data):\n        self.data = data\n        self.processed = False\n    \n    def process(self):\n        self.data = [x * 2 for x in self.data]\n        self.processed = True\n    \n    def get_stats(self):\n        return {\n            \"min\": min(self.data),\n            \"max\": max(self.data),\n            \"avg\": sum(self.data) / len(self.data)\n        }\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "523c9072-09d4-4751-90b6-2e23204f1f1d",
+        "timestamp": "2026-02-24T13:39:08.648227",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_realistic_app.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_realistic_app.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\nclass UserManager:\n    def __init__(self)  # Manque :\n    self.users = {}\n    \n    def add_user(self, username, email)  # Manque :\n    if username in self.users:\n    return False  # Mauvaise indentation\n    users[username] = email  # Devrait être self.users\n    return True\n    \n    def remove_user(self, username):\n        del self.users[username]  # KeyError si n'existe pas\n    \n    def get_user_email(self, username):\n        return self.users[username]  # KeyError si n'existe pas\n    \n    def count_users(self):\n        return len(self.users)\n\ndef validate_email(email):\n    if '@' in email and '.' in email:\n        return True\n    return False\n\ndef process_user_data(data):\n    results = []\n    for user in data:\n        if validate_email(user['email']):  # KeyError si 'email' absent\n            results.append(user)\n    return results\n\ndef calculate_statistics(numbers):\n    total = sum(numbers)\n    avg = total / len(numbers)  # ZeroDivisionError si vide\n    return {\n        \"total\": total,\n        \"average\": avg,\n        \"min\": min(numbers),  # ValueError si vide\n        \"max\": max(numbers)   # ValueError si vide\n    }\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 1136
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "4bf2527f-fd06-49da-a12d-00f03618720d",
+        "timestamp": "2026-02-24T13:39:08.783825",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_realistic_app.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_realistic_app.py\n```python\n\nclass UserManager:\n    def __init__(self)  # Manque :\n    self.users = {}\n    \n    def add_user(self, username, email)  # Manque :\n    if username in self.users:\n    return False  # Mauvaise indentation\n    users[username] = email  # Devrait être self.users\n    return True\n    \n    def remove_user(self, username):\n        del self.users[username]  # KeyError si n'existe pas\n    \n    def get_user_email(self, username):\n        return self.users[username]  # KeyError si n'existe pas\n    \n    def count_users(self):\n        return len(self.users)\n\ndef validate_email(email):\n    if '@' in email and '.' in email:\n        return True\n    return False\n\ndef process_user_data(data):\n    results = []\n    for user in data:\n        if validate_email(user['email']):  # KeyError si 'email' absent\n            results.append(user)\n    return results\n\ndef calculate_statistics(numbers):\n    total = sum(numbers)\n    avg = total / len(numbers)  # ZeroDivisionError si vide\n    return {\n        \"total\": total,\n        \"average\": avg,\n        \"min\": min(numbers),  # ValueError si vide\n        \"max\": max(numbers)   # ValueError si vide\n    }\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "74205171-147d-40b6-9b95-bcc63de5bdec",
+        "timestamp": "2026-02-24T13:39:10.784033",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_style_pep8.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_style_pep8.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 11\n\nTop issues:\n1. Line 14: Line too long (102/100)\n2. Line 1: Missing module docstring\n3. Line 2: Missing function or method docstring\n4. Line 6: Missing class docstring\n5. Line 7: Missing function or method docstring\n\n\n\n\nSOURCE CODE:\n```python\n\ndef BadFunctionName(x,y):  # Mauvais nom + pas d'espaces\n    z=x+y  # Pas d'espaces autour de =\n    return z\n\nclass myclass:  # Nom de classe en minuscules\n    def MyMethod(self,a,b):  # Pas d'espaces dans les paramètres\n        list=[1,2,3]  # Shadow built-in + pas d'espaces\n        sum=0  # Shadow built-in\n        for i in list:\n            sum+=i  # Pas d'espaces\n        return sum\n\ndef VeryLongFunctionNameThatDoesNotFollowPep8StyleGuideAndIsTooLongToReadEasily(param1,param2,param3):\n    return param1+param2+param3\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 11,
+            "code_length": 525
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "18cb5311-7dbc-4cfc-b0f3-334a485204f4",
+        "timestamp": "2026-02-24T13:39:10.909759",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_style_pep8.py",
+            "auditor_report": "1. Line too long (102/100)\n2. Missing module docstring\n3. Missing function or method docstring\n4. Missing class docstring\n5. Missing function or method docstring\n6. Redefining built-in 'list'\n7. Redefining built-in 'sum'\n8. Unused argument 'a'\n9. Unused argument 'b'\n10. Too few public methods (1/2)\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Line too long (102/100)\n2. Missing module docstring\n3. Missing function or method docstring\n4. Missing class docstring\n5. Missing function or method docstring\n6. Redefining built-in 'list'\n7. Redefining built-in 'sum'\n8. Unused argument 'a'\n9. Unused argument 'b'\n10. Too few public methods (1/2)\n\n\nFILE TO FIX:\nFILE: sandbox\\test_style_pep8.py\n```python\n\ndef BadFunctionName(x,y):  # Mauvais nom + pas d'espaces\n    z=x+y  # Pas d'espaces autour de =\n    return z\n\nclass myclass:  # Nom de classe en minuscules\n    def MyMethod(self,a,b):  # Pas d'espaces dans les paramètres\n        list=[1,2,3]  # Shadow built-in + pas d'espaces\n        sum=0  # Shadow built-in\n        for i in list:\n            sum+=i  # Pas d'espaces\n        return sum\n\ndef VeryLongFunctionNameThatDoesNotFollowPep8StyleGuideAndIsTooLongToReadEasily(param1,param2,param3):\n    return param1+param2+param3\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "d7d46326-af83-430f-b440-822f698f9dc7",
+        "timestamp": "2026-02-24T13:39:13.175961",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_syntax_basic.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_syntax_basic.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 2: Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nPriority Issues:\n- [critical] Line 2: Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nSOURCE CODE:\n```python\n\ndef add(a, b)  # Manque :\n    return a + b\n\ndef multiply(x, y)\n    return x * y  # Manque :\n\ndef subtract(a, b):\nreturn a - b  # Mauvaise indentation\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 151
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "2ffafd4b-7ddb-4488-8797-2c7a3158859a",
+        "timestamp": "2026-02-24T13:39:13.299548",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_syntax_basic.py",
+            "auditor_report": "1. Parsing failed: 'expected ':' (<unknown>, line 2)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'expected ':' (<unknown>, line 2)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_syntax_basic.py\n```python\n\ndef add(a, b)  # Manque :\n    return a + b\n\ndef multiply(x, y)\n    return x * y  # Manque :\n\ndef subtract(a, b):\nreturn a - b  # Mauvaise indentation\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "eaf0b22e-5fb0-49e2-b631-aa8f5ac22518",
+        "timestamp": "2026-02-24T13:39:15.370978",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_undefined_vars.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_undefined_vars.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 14\n\nTop issues:\n1. Line 13: Trailing whitespace\n2. Line 16: Trailing whitespace\n3. Line 1: Missing module docstring\n4. Line 2: Missing function or method docstring\n5. Line 5: Undefined variable 'z'\n\n\nPriority Issues:\n- [high] Line 5: Undefined variable 'z'\n- [high] Line 8: Undefined variable 'math'\n- [high] Line 15: Undefined variable 'grade'\n- [high] Line 18: Undefined variable 'name'\n\n\nSOURCE CODE:\n```python\n\ndef use_undefined_var():\n    x = 10\n    y = 20\n    return z  # z n'est pas défini\n\ndef missing_import():\n    return math.sqrt(16)  # math n'est pas importé\n\nclass Student:\n    def __init__(self, name):\n        self.name = name\n    \n    def get_grade(self):\n        return grade  # grade n'est pas défini\n    \n    def print_info(self):\n        print(f\"Name: {name}\")  # Devrait être self.name\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 14,
+            "code_length": 393
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "39a955d5-b7ec-4a54-97eb-d23ea98c4337",
+        "timestamp": "2026-02-24T13:39:15.493113",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_undefined_vars.py",
+            "auditor_report": "1. Undefined variable 'z'\n2. Undefined variable 'math'\n3. Undefined variable 'grade'\n4. Undefined variable 'name'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Undefined variable 'z'\n2. Undefined variable 'math'\n3. Undefined variable 'grade'\n4. Undefined variable 'name'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_undefined_vars.py\n```python\n\ndef use_undefined_var():\n    x = 10\n    y = 20\n    return z  # z n'est pas défini\n\ndef missing_import():\n    return math.sqrt(16)  # math n'est pas importé\n\nclass Student:\n    def __init__(self, name):\n        self.name = name\n    \n    def get_grade(self):\n        return grade  # grade n'est pas défini\n    \n    def print_info(self):\n        print(f\"Name: {name}\")  # Devrait être self.name\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
+    },
+    {
+        "id": "146cc063-95ef-48e1-9f96-10d03e4aae37",
+        "timestamp": "2026-02-24T13:39:17.425906",
+        "agent": "Auditor_Agent",
+        "model": "gemini-2.5-flash",
+        "action": "CODE_ANALYSIS",
+        "details": {
+            "file_analyzed": "test_wrong_operators.py",
+            "input_prompt": "ROLE: Auditor Agent\nACTION_TYPE: ANALYSIS\nPROMPT_VERSION: v2.0\n\n<context>\nYou are given Python source code from the sandbox directory only.\nDo not assume the existence of any other files or functionality.\n</context>\n\n<task>\nCarefully analyze the provided code and identify:\n- Bugs or logical errors\n- Bad coding practices\n- Missing documentation\n- Readability and maintainability issues\nFocus only on what is directly visible in the code.\n</task>\n\n<constraints>\n- READ-ONLY MODE: Do NOT modify any code.\n- Do NOT invent new files, functions, or intended behaviors.\n- Do NOT suggest new features.\n- Only analyze files provided from the sandbox directory.\n- If code is missing or incomplete, do NOT guess.\n\nIf required information is missing, return:\nAGENT_STATUS: BLOCKED\nREASON: INSUFFICIENT_INFORMATION_IN_SANDBOX\n</constraints>\n\n<output_format>\nProvide a numbered list of issues and recommendations.\n\nEach item must include:\n- File name\n- Function or class name (if applicable)\n- Issue type: [BUG], [STYLE], or [DESIGN]\n- Short explanation\n\nFormat:\n1. [BUG] In file example.py, function foo(): description...\n2. [STYLE] In file utils.py, variable names are unclear...\n\nIf no issues are found, respond with:\nNO_ISSUES_FOUND\n</output_format>\n\n\nFILE: test_wrong_operators.py\n\nSTATIC ANALYSIS RESULTS:\nPylint Score: 0.0/10\nTotal issues: 1\n\nTop issues:\n1. Line 3: Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nPriority Issues:\n- [critical] Line 3: Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nSOURCE CODE:\n```python\n\ndef check_equality(a, b):\n    if a = b:  # Devrait être ==\n        return True\n    return False\n\ndef check_range(x):\n    if x > 0 and x < 100:  # OK mais pourrait être 0 < x < 100\n        return \"valid\"\n    return \"invalid\"\n\ndef assign_in_condition():\n    x = 10\n    if y = 5:  # Devrait être ==\n        x = y\n    return x\n\ndef factorial(n):\n    if n = 0:  # Devrait être ==\n        return 1\n    return n * factorial(n - 1)\n\n```\n\nPlease analyze this code and provide your findings in the specified format.\n",
+            "output_response": "LLM_ERROR: 403 Your API key was reported as leaked. Please use another API key.",
+            "pylint_score": 0.0,
+            "issues_found": 1,
+            "code_length": 425
+        },
+        "status": "SUCCESS"
+    },
+    {
+        "id": "74c77516-9155-4d89-ab75-294c23f8007c",
+        "timestamp": "2026-02-24T13:39:17.564921",
+        "agent": "FixerAgent",
+        "model": "models/gemini-2.5-flash",
+        "action": "FIX",
+        "details": {
+            "file": "sandbox\\test_wrong_operators.py",
+            "auditor_report": "1. Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n",
+            "input_prompt": "\nROLE: Fixer Agent\nACTION_TYPE: FIX\nPROMPT_VERSION: v3.0\n\n<context>\nYou will receive:\n1. Source code files from the sandbox directory.\n2. An auditor report listing specific issues.\n\nYour task is to fix all reported bugs exactly according to the auditor report.\nYou should **not skip any reported bug**, even if it appears the code is correct.\nYou should preserve the original function names and class hierarchy.\n</context>\n\n<task>\nFix all bugs listed in the auditor report.\n- Correct all reported bugs.\n- Fix indentation, off-by-one errors, wrong operations, wrong variable names, recursion mistakes, and method logic as indicated.\n- Improve clarity **only if explicitly requested**.\n- Do not add any new features beyond the auditor report.\n- Keep the original file structure intact.\n- Overwrite the files in place with corrected code.\n</task>\n\n<constraints>\n- Modify ONLY files explicitly mentioned in the auditor report.\n- Do NOT create, delete, or rename files.\n- Do NOT write or modify tests.\n- Public function signatures must not change unless required to fix a bug.\n- Only minimal safe changes to fix the bugs.\n- Never return \"BLOCKED\" or require assumptions — fix the bugs you are told to fix.\n</constraints>\n\n<thinking>\nAnalyze the auditor report and code carefully.\nApply **all minimal fixes** to satisfy every point in the report.\nDo not output explanations, reasoning, or commentary.\nReturn the full corrected file(s) in Python syntax.\n</thinking>\n\n<output_format>\nFor each modified file, respond exactly in this format:\n\nFILE: sandbox/path/to/file.py\n```python\n<full corrected file content>\n\n\nAUDITOR REPORT:\n1. Parsing failed: 'invalid syntax. Maybe you meant '==' or ':=' instead of '='? (<unknown>, line 3)'\n\n\nFILE TO FIX:\nFILE: sandbox\\test_wrong_operators.py\n```python\n\ndef check_equality(a, b):\n    if a = b:  # Devrait être ==\n        return True\n    return False\n\ndef check_range(x):\n    if x > 0 and x < 100:  # OK mais pourrait être 0 < x < 100\n        return \"valid\"\n    return \"invalid\"\n\ndef assign_in_condition():\n    x = 10\n    if y = 5:  # Devrait être ==\n        x = y\n    return x\n\ndef factorial(n):\n    if n = 0:  # Devrait être ==\n        return 1\n    return n * factorial(n - 1)\n\n```",
+            "output_response": "403 Your API key was reported as leaked. Please use another API key."
+        },
+        "status": "FAILURE"
     }
 ]
