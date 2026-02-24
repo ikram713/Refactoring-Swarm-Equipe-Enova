@@ -2,7 +2,13 @@ import argparse
 import sys
 import os
 from dotenv import load_dotenv
+
+
 from src.utils.logger import log_experiment, ActionType
+from workflow_graph import workflow
+
+from src.utils.logger import log_experiment, ActionType
+
 
 load_dotenv()
 
@@ -16,6 +22,29 @@ def main():
         sys.exit(1)
     
     print(f"🚀 DEMARRAGE SUR : {args.target_dir}")
+
+
+    #  CORRECT LOGGER CALL
+    log_experiment(
+        agent_name="System",
+        model_used="no-llm",
+        action=ActionType.ANALYSIS,
+        details={
+            "input_prompt": "Start system",
+            "output_response": f"Target directory set to {args.target_dir}"
+        },
+        status="SUCCESS"
+    )
+
+    workflow.invoke({
+        "target_dir": args.target_dir,
+        "files": [],
+        "problems": [],
+        "fixed": [],
+        "test_passed": False
+    })
+
+
     
     log_experiment(
         agent_name="System",
@@ -29,6 +58,7 @@ def main():
         status="SUCCESS"
     )
     
+
     print("✅ MISSION_COMPLETE")
     
     # =========================================================================
@@ -71,6 +101,7 @@ def main():
     print("\n" + "=" * 70)
     print("🎉 PROCESSUS COMPLET TERMINÉ !")
     print("=" * 70)
+
 
 if __name__ == "__main__":
     main()
