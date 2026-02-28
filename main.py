@@ -3,6 +3,7 @@ import sys
 import os
 from dotenv import load_dotenv
 from src.utils.logger import log_experiment, ActionType
+import subprocess
 
 load_dotenv()
 
@@ -35,21 +36,6 @@ def main():
     # APPELS DES 3 SCRIPTS (AJOUTÉS ICI)
     # =========================================================================
     
-    print("\n" + "=" * 70)
-    print("📝 ÉTAPE 1/3 : CRÉATION DU DATASET DE TEST")
-    print("=" * 70)
-    
-    # Appel du script 1 : create_comprehensive_tests.py
-    import subprocess
-    result = subprocess.run([sys.executable, "create_comprehensive_tests.py"], 
-                          capture_output=False)
-    if result.returncode != 0:
-        print("❌ Erreur lors de la création du dataset")
-        sys.exit(1)
-    
-    print("\n" + "=" * 70)
-    print("🧪 ÉTAPE 2/3 : TEST DE TOUS LES FICHIERS")
-    print("=" * 70)
     
     # Appel du script 2 : test_all_files.py
     result = subprocess.run([sys.executable, "test_all_files.py"], 
